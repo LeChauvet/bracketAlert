@@ -63,35 +63,30 @@ public class StackExpression implements Expression {
         int i = 0;
         while (i < chars.length) {
             char c = chars[i];
-            if (c == '(' || c == ')') {
-                if (!sb.toString().trim().isEmpty()) {
-                    expList.add(sb.toString());
+            if (c == '(' || c == ')' || c == '&' || c == '|') {
+                String trim = sb.toString().trim();
+                if (!trim.isEmpty()) {
+                    expList.add(trim);
                     sb.setLength(0);
                 }
-                expList.add(String.valueOf(c));
-                i++;
-            } else if (c == '&') {
-                if (!sb.toString().trim().isEmpty()) {
-                    expList.add(sb.toString());
-                    sb.setLength(0);
+                if (c == '(' || c == ')') {
+                    expList.add(String.valueOf(c));
+                    i++;
+                } else if (c == '&') {
+                    expList.add("&&");
+                    i += 2;
+                } else {
+                    expList.add("||");
+                    i += 2;
                 }
-                expList.add("&&");
-                i += 2;
-            } else if (c == '|') {
-                if (!sb.toString().trim().isEmpty()) {
-                    expList.add(sb.toString());
-                    sb.setLength(0);
-                }
-                expList.add("||");
-                i += 2;
             } else {
                 sb.append(c);
                 i++;
             }
         }
-        if (!sb.toString().trim().isEmpty()) {
-            expList.add(sb.toString());
-            sb.setLength(0);
+        String trim = sb.toString().trim();
+        if (!trim.isEmpty()) {
+            expList.add(trim);
         }
         expList.add("#");
         return expList;
